@@ -1,0 +1,20 @@
+{
+  "name": "paperclip-adapter-rool-machine",
+  "version": "0.2.0",
+  "type": "module",
+  "description": "Unofficial community Paperclip external adapter for Rool Machines",
+  "license": "MIT",
+  "paperclip": {
+    "adapterUiParser": "1.0.0"
+  },
+  "exports": {
+    ".": "./index.js",
+    "./ui-parser": "./ui-parser.js"
+  },
+  "files": [
+    "index.js",
+    "ui-parser.js",
+    "README.md",
+    "CHANGELOG.md"
+  ]
+}
