@@ -2,7 +2,7 @@
 
 Unofficial community integration that lets [Paperclip](https://github.com/paperclipai/paperclip) run workers on Rool Machines through a Paperclip external adapter and a small Rool bridge.
 
-> **Status: early community release.** v0.2.1 includes the first post-release compatibility fix and a mock end-to-end integration suite. The integration has completed real Paperclip → Rool onboarding runs, but it has not yet had broad production testing.
+> **Status: early community release.**v0.2.1 includes the first post-release compatibility fix, verified against a real Paperclip → Rool deployment, as well as a mock end-to-end integration suite. The integration has completed real Paperclip → Rool onboarding runs, but it has not yet had broad production testing.
 
 This project is not affiliated with or endorsed by Paperclip or Rool.
 
