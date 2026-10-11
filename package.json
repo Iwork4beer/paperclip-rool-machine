@@ -1,13 +1,13 @@
 {
   "name": "paperclip-rool-machine",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "private": true,
   "type": "module",
-  "description": "Unofficial community Paperclip ↔ Rool Machine integration",
+  "description": "Unofficial community Paperclip \u2194 Rool Machine integration",
   "license": "MIT",
   "scripts": {
     "check": "node --check adapter/index.js && node --check adapter/ui-parser.js && node --check bridge/bridge.mjs",
-    "test": "node tests/integration.mjs",
+    "test": "node tests/instructions-paths.mjs && node tests/integration.mjs",
     "verify": "npm run check && npm test"
   }
 }

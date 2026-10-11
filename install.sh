@@ -37,6 +37,6 @@ chmod 644 "$BRIDGE_TARGET"
 PAPERCLIP_ROOT="$PAPERCLIP_ROOT" "$ROOT/verify-install.sh"
 
 echo
-echo "Installed Paperclip Rool adapter 0.2.0 / bridge 0.4.0."
+echo "Installed Paperclip Rool adapter 0.2.1 / bridge 0.4.0."
 if [ "$HAS_OLD" -eq 1 ]; then echo "Backup: $BACKUP_DIR"; fi
 echo "Restart Paperclip to reload the external adapter and UI parser."

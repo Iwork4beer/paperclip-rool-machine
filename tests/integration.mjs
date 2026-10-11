@@ -66,7 +66,8 @@ export class RoolClient {
 }
 `);
 
-const instructionsRoot = path.join(tmp, "instructions");
+const canonicalInstructionsRoot = path.join(tmp, "canonical-instructions");
+const instructionsRoot = path.join(tmp, "materialized-instructions");
 await mkdir(instructionsRoot, { recursive: true });
 await writeFile(path.join(instructionsRoot, "AGENTS.md"), "# Worker instructions\nRead TOOLS.md.\n");
 await writeFile(path.join(instructionsRoot, "TOOLS.md"), "# Tools\nDo useful work.\n");
@@ -119,7 +120,7 @@ const baseConfig = {
   bridgePath:path.join(fixture,"bridge.mjs"),
   cwd:fixture,
   instructionsBundleMode:"managed",
-  instructionsRootPath:instructionsRoot,
+  instructionsRootPath:canonicalInstructionsRoot,
   instructionsEntryFile:"AGENTS.md",
   instructionsFilePath:path.join(instructionsRoot,"AGENTS.md"),
   paperclipSkillSync:{desiredSkills:["paperclip"]},
@@ -211,7 +212,7 @@ assert(calls.some(c=>c.method==="POST" && c.url==="/api/issues/task-1/checkout")
 assert(calls.some(c=>c.method==="POST" && c.url==="/api/issues/task-1/interactions"));
 assert(calls.some(c=>c.method==="PATCH" && c.url==="/api/issues/task-1"));
 
-console.log("PASS: adapter capabilities, remote Test Environment probe, managed instructions transport, skill transport, issue attachment transport, rich task context, session resume, same-run idempotency, force-fresh session, Paperclip lifecycle persistence and UI parser.");
+console.log("PASS: adapter capabilities, materialized managed instructions rebasing, remote Test Environment probe, managed instructions transport, skill transport, issue attachment transport, rich task context, session resume, same-run idempotency, force-fresh session, Paperclip lifecycle persistence and UI parser.");
 
 await new Promise(resolve=>server.close(resolve));
 await rm(tmp,{recursive:true,force:true});

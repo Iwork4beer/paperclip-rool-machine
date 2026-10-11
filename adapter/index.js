@@ -74,6 +74,68 @@ function plainObject(value) {
   return value && typeof value === "object" && !Array.isArray(value) ? value : {};
 }
 
+function pathIsInside(rootPath, candidatePath) {
+  const relative = path.relative(rootPath, candidatePath);
+  return Boolean(relative) && relative !== ".." && !relative.startsWith(`..${path.sep}`) && !path.isAbsolute(relative);
+}
+
+function instructionsEntryParts(value, fallback) {
+  const raw = stringValue(value, fallback).replaceAll("\\", "/");
+  if (!raw || raw.startsWith("/") || /^[A-Za-z]:\//.test(raw)) {
+    throw Object.assign(new Error("Managed Instructions entry file must be a relative bundle path."), { code: "instructions_entry_invalid" });
+  }
+  const parts = raw.split("/");
+  if (parts.some((part) => !part || part === "." || part === "..")) {
+    throw Object.assign(new Error("Managed Instructions entry file contains an invalid path segment."), { code: "instructions_entry_invalid" });
+  }
+  return parts;
+}
+
+function deriveMaterializedInstructionsRoot(entryFile, entryParts) {
+  let rootPath = entryFile;
+  for (let i = 0; i < entryParts.length; i += 1) rootPath = path.dirname(rootPath);
+  const expectedEntry = path.resolve(rootPath, ...entryParts);
+  if (expectedEntry !== entryFile || !pathIsInside(rootPath, entryFile)) {
+    throw Object.assign(
+      new Error("Materialized Managed Instructions entry does not match instructionsEntryFile."),
+      { code: "instructions_materialized_entry_mismatch" },
+    );
+  }
+  return rootPath;
+}
+
+export function resolveInstructionsPaths(configInput) {
+  const config = plainObject(configInput);
+  const rawEntryFile = stringValue(config.instructionsFilePath, stringValue(config.agentsMdPath, ""));
+  if (!rawEntryFile) return null;
+
+  const entryFile = path.resolve(rawEntryFile);
+  const mode = stringValue(config.instructionsBundleMode, "managed");
+  const configuredRootRaw = stringValue(config.instructionsRootPath, "");
+  const configuredRoot = configuredRootRaw ? path.resolve(configuredRootRaw) : "";
+  const entryParts = instructionsEntryParts(config.instructionsEntryFile, path.basename(entryFile));
+
+  if (configuredRoot && pathIsInside(configuredRoot, entryFile)) {
+    const relativeEntry = path.relative(configuredRoot, entryFile).split(path.sep).join("/");
+    return { entryFile, rootPath: configuredRoot, entryName: relativeEntry, mode };
+  }
+
+  if (configuredRoot && mode !== "managed") {
+    throw Object.assign(
+      new Error("Managed Instructions entry file is outside instructionsRootPath."),
+      { code: "instructions_entry_outside_root" },
+    );
+  }
+
+  // Paperclip rewrites instructionsFilePath to a per-run materialized copy for
+  // managed bundles, while instructionsRootPath remains the canonical bundle
+  // root. Rebase only the managed bundle and only when the materialized entry
+  // ends with the exact validated instructionsEntryFile path. This keeps the
+  // root narrow and preserves the bridge's containment check.
+  const rootPath = deriveMaterializedInstructionsRoot(entryFile, entryParts);
+  return { entryFile, rootPath, entryName: entryParts.join("/"), mode };
+}
+
 function contextString(context, ...keys) {
   for (const key of keys) {
     const value = context?.[key];
@@ -287,22 +349,11 @@ async function prepareRuntimeManifest(config) {
       missingDetail: stringValue(entry.missingDetail, ""),
     }));
 
-  const instructionsFilePath = stringValue(config.instructionsFilePath, stringValue(config.agentsMdPath, ""));
-  const instructionsRootPath = stringValue(
-    config.instructionsRootPath,
-    instructionsFilePath ? path.dirname(instructionsFilePath) : "",
-  );
+  const instructions = resolveInstructionsPaths(config);
 
   const manifest = {
     version: 1,
-    instructions: instructionsFilePath
-      ? {
-          entryFile: instructionsFilePath,
-          rootPath: instructionsRootPath,
-          entryName: stringValue(config.instructionsEntryFile, path.basename(instructionsFilePath)),
-          mode: stringValue(config.instructionsBundleMode, "managed"),
-        }
-      : null,
+    instructions,
     skills,
     limits: {
       maxAttachments: numberValue(config.maxAttachments, DEFAULT_MAX_ATTACHMENTS, 0, 200),

@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.1 — 2026-10-11
+
+- Fixed managed Instructions startup failure when Paperclip materializes the entry file into a per-run directory but leaves `instructionsRootPath` pointing at the canonical bundle.
+- The adapter now rebases only managed materialized bundles to a narrow root derived from the validated `instructionsEntryFile`.
+- Preserved containment enforcement for external bundles and added regression coverage for flat/nested materialization, traversal, unrelated outside paths, and sibling-prefix escapes.
+- Bridge 0.4.0 and Rool machine/profile bindings are unchanged.
+
 ## 0.2.0 — 2026-10-05
 
 - First community release.

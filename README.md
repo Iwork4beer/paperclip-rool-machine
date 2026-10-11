@@ -2,7 +2,7 @@
 
 Unofficial community integration that lets [Paperclip](https://github.com/paperclipai/paperclip) run workers on Rool Machines through a Paperclip external adapter and a small Rool bridge.
 
-> **Status: early community release.** v0.2.0 has a mock end-to-end integration suite and has completed an initial real Paperclip → Rool onboarding run successfully. It has not yet had broad production testing.
+> **Status: early community release.** v0.2.1 includes the first post-release compatibility fix and a mock end-to-end integration suite. The integration has completed real Paperclip → Rool onboarding runs, but it has not yet had broad production testing.
 
 This project is not affiliated with or endorsed by Paperclip or Rool.
 
@@ -54,7 +54,7 @@ See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for details.
 
 ## Install
 
-Download the release asset `paperclip-rool-machine-v0.2.0.zip`, extract it somewhere visible inside the Paperclip container, then run:
+Download the release asset `paperclip-rool-machine-v0.2.1.zip`, extract it somewhere visible inside the Paperclip container, then run:
 
 ```sh
 ./install.sh
